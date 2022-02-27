@@ -6,6 +6,16 @@ import numpy as np
 import tkinter
 from random import random
 
+# The class and tier to be simulated
+CLASS = 4
+TIER = 4
+
+# Average price you expect to spend per item
+ITEM_COST = 5000000
+
+# Average price you expect to spend per sliver
+SLIVER_COST = 15000
+CORE_COST = SLIVER_COST * 50
 
 # Gold fees for T8, T9, T10 are estimates
 GOLD_FEES = [[25000],
@@ -14,13 +24,6 @@ GOLD_FEES = [[25000],
         [8000000, 20000000, 40000000, 65000000, 100000000, 250000000, 750000000,
             2000000000, 4000000000, 6000000000]]
 
-# Average price you expect to spend per sliver
-SLIVER_COST = 15000
-CORE_COST = SLIVER_COST * 50
-
-# Average price you expect to spend per item
-ITEM_COST = 5000000
-
 # Estimated values for the bonus refund effects
 DUST_REFUND = 1 / 6
 CORE_REFUND = 1 / 33
@@ -28,13 +31,10 @@ GOLD_REFUND = 1 / 100
 ITEM_REFUND = 1 / 250
 UPGRADED_ITEM_REFUND = 1 / 1000
 
+SIMULATION_ROUNDS = 100000
 
 def main():
-    sim(4, 4, 50000)
-
-
-def sim(classif, tier, rounds):
-    results = [sim_one_round(classif, tier) for i in range(rounds)]
+    results = [sim_one_round(CLASS, TIER) for i in range(SIMULATION_ROUNDS)]
     total_costs = [(ITEM_COST * i[0] + CORE_COST * i[2] + i[3]) / 1000000 for i in results]
     item_counts = [i[0] for i in results]
     gold_counts = [i[3] / 1000000 for i in results]
