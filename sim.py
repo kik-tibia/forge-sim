@@ -43,12 +43,10 @@ def main():
     min_cost = int(min(total_costs))
     max_cost = int(max(total_costs))
 
-    print(f'min: {min_cost}kk')
-    print(f'max: {max_cost}kk')
-    print(f'avg: {avg_cost}kk')
 
-    print(f'avg item count: {sum(item_counts) / len(item_counts)}')
-    print(f'avg gold fees: {sum(gold_counts) / len(gold_counts)}kk')
+    print(f'mean item count: {sum(item_counts) / len(item_counts)}')
+    print(f'mean gold fees: {sum(gold_counts) / len(gold_counts)}kk')
+    print(f'mean total cost: {int(avg_cost)}kk')
 
     plot(total_costs, avg_cost, min_cost, max_cost)
 
@@ -58,7 +56,6 @@ def plot(total_costs, avg_cost, min_cost, max_cost):
     bins = range(min_cost, max_cost, bin_size)
     fig, ax = plt.subplots()
     plt.hist(total_costs, density=True, bins=bins, color='#A0E0F0')
-    plt.xticks(range(0, max_cost + 1, 100))
     plt.yticks([])
 
     quartiles = [1, 10, 25]
@@ -77,13 +74,18 @@ def plot(total_costs, avg_cost, min_cost, max_cost):
 
     trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
 
+    print('percentiles:')
     i = 0
     for q in np.percentile(total_costs, quartiles):
+        print(f'{quartiles[i]}%: {int(q)}kk')
         plt.axvline(q, ymax=heights[i], linewidth=2, color='orange')
         plt.text(q, heights[i] + 0.01, f'{quartiles[i]}%\n{int(q)}kk', size=12, weight='bold', ha='center', transform=trans)
         i += 1
     plt.axvline(avg_cost, ymax=mean_height, linewidth=2, color='red')
     plt.text(avg_cost, mean_height + 0.01, f'mean\n{int(avg_cost)}kk', size=12, weight='bold', ha='center', transform=trans)
+    plt.title(f'Class {CLASS}, Tier {TIER}', fontsize=30)
+    fig.set_size_inches(18.5, 10.5)
+    fig.savefig('fig.png', dpi=100, bbox_inches = 'tight')
     plt.show()
 
 
