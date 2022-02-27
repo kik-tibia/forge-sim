@@ -14,7 +14,7 @@ TIER = 4
 ITEM_COST = 5000000
 
 # Average price you expect to spend per sliver
-SLIVER_COST = 15000
+SLIVER_COST = 20000
 CORE_COST = SLIVER_COST * 50
 
 # Gold fees for T8, T9, T10 are estimates
@@ -32,6 +32,7 @@ ITEM_REFUND = 1 / 250
 UPGRADED_ITEM_REFUND = 1 / 1000
 
 SIMULATION_ROUNDS = 100000
+
 
 def main():
     results = [sim_one_round(CLASS, TIER) for i in range(SIMULATION_ROUNDS)]
