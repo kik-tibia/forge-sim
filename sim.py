@@ -14,13 +14,13 @@ TIER = 4
 ITEM_COST = 5000000
 
 # Average price you expect to spend per sliver
-SLIVER_COST = 20000
+SLIVER_COST = 15000 if TIER <= 3 else 20000
 CORE_COST = SLIVER_COST * 50
 
 # Gold fees for T8, T9, T10 are estimates
 GOLD_FEES = [[25000],
         [750000, 5000000],
-        [4000000, 1000000, 20000000],
+        [4000000, 10000000, 20000000],
         [8000000, 20000000, 40000000, 65000000, 100000000, 250000000, 750000000,
             2000000000, 4000000000, 6000000000]]
 
@@ -52,8 +52,9 @@ def main():
 
 
 def plot(total_costs, avg_cost, min_cost, max_cost):
-    bin_size = max(1, (max_cost - min_cost) // 200)
-    bins = range(min_cost, max_cost, bin_size)
+    graph_end = int(np.percentile(total_costs, 100 - 1000 / SIMULATION_ROUNDS))
+    bin_size = max(1, (graph_end - min_cost) // 150)
+    bins = range(min_cost, graph_end, bin_size)
     fig, ax = plt.subplots()
     plt.hist(total_costs, density=True, bins=bins, color='#A0E0F0')
     plt.yticks([])
@@ -81,11 +82,14 @@ def plot(total_costs, avg_cost, min_cost, max_cost):
         plt.axvline(q, ymax=heights[i], linewidth=2, color='orange')
         plt.text(q, heights[i] + 0.01, f'{quartiles[i]}%\n{int(q)}kk', size=12, weight='bold', ha='center', transform=trans)
         i += 1
+
     plt.axvline(avg_cost, ymax=mean_height, linewidth=2, color='red')
     plt.text(avg_cost, mean_height + 0.01, f'mean\n{int(avg_cost)}kk', size=12, weight='bold', ha='center', transform=trans)
     plt.title(f'Class {CLASS}, Tier {TIER}', fontsize=30)
+
     fig.set_size_inches(18.5, 10.5)
     fig.savefig('fig.png', dpi=100, bbox_inches = 'tight')
+
     plt.show()
 
 
@@ -108,16 +112,31 @@ def sim_one_round(classif, tier):
                     items[0] = 2
             if items[i] >= 2:  # We have two items of the same tier, attempt fusion
                 dust += 100
-                cores += 2
                 gold += GOLD_FEES[classif - 1][i]
-                if random() > 0.65:  # failed fusion
-                    if random() > 0.5:  # tier loss
+
+                # Decide whether to use cores
+                cores_used = 0
+                if classif < 4 and (GOLD_FEES[classif - 1][i] + ITEM_COST) * 0.15 < CORE_COST:
+                    p_success = 0.5
+                else:
+                    p_success = 0.65
+                    cores_used += 1
+                if classif < 4 and i == 0 and ITEM_COST * (1 - p_success) * 0.5 < CORE_COST:
+                    p_tier_loss = 1
+                else:
+                    p_tier_loss = 0.5
+                    cores_used += 1
+
+                cores += cores_used
+
+                if random() > p_success:  # failed fusion
+                    if random() < p_tier_loss:  # tier loss
                         items[i] -= 1
                         if i > 0:  # If an item is tier 0, it's destroyed, not reduced in tier
                             items[i - 1] += 1
                 else:  # successful fusion, check for bonus refunds
                     if random() < DUST_REFUND: dust -= 100
-                    elif random() < CORE_REFUND: cores -= 2
+                    elif random() < CORE_REFUND: cores -= cores_used
                     elif random() < GOLD_REFUND: gold -= GOLD_FEES[classif - 1][i]
                     elif random() < ITEM_REFUND: items[i] += 1
                     elif random() < UPGRADED_ITEM_REFUND: items[i + 1] += 1
