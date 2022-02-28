@@ -3,7 +3,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.transforms as transforms
 import numpy as np
-import tkinter
 from random import random
 
 # The class and tier to be simulated
