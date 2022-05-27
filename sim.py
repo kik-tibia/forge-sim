@@ -24,9 +24,10 @@ GOLD_FEES = [[25000],
 
 # Estimated values for the bonus refund effects
 DUST_REFUND = 1 / 6
-CORE_REFUND = 1 / 33
+CORE_REFUND = 1 / 20
 GOLD_REFUND = 1 / 100
-ITEM_REFUND = 1 / 250
+DOWNGRADED_ITEM_REFUND = 1 / 250
+ITEM_REFUND = 1 / 500
 UPGRADED_ITEM_REFUND = 1 / 1000
 
 SIMULATION_ROUNDS = 10000
@@ -136,6 +137,7 @@ def sim_one_round(classif, tier):
                     if random() < DUST_REFUND: dust -= 100
                     elif random() < CORE_REFUND: cores -= cores_used
                     elif random() < GOLD_REFUND: gold -= GOLD_FEES[classif - 1][i]
+                    elif random() < DOWNGRADED_ITEM_REFUND and i > 0: items[i - 1] += 1
                     elif random() < ITEM_REFUND: items[i] += 1
                     elif random() < UPGRADED_ITEM_REFUND: items[i + 1] += 1
                     items[i] -= 2
