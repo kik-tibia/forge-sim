@@ -7,21 +7,20 @@ from random import random
 
 # The class and tier to be simulated
 CLASS = 4
-TIER = 4
+TIER = 10
 
 # Average price you expect to spend per item
-ITEM_COST = 5000000
+ITEM_COST = 4000000
 
 # Average price you expect to spend per sliver
-SLIVER_COST = 15000 if TIER <= 3 else 20000
+SLIVER_COST = 15000 # 8000 if TIER <= 3 else 15000
 CORE_COST = SLIVER_COST * 50
 
-# Gold fees for T8, T9, T10 are estimates
 GOLD_FEES = [[25000],
         [750000, 5000000],
         [4000000, 10000000, 20000000],
         [8000000, 20000000, 40000000, 65000000, 100000000, 250000000, 750000000,
-            2000000000, 4000000000, 6000000000]]
+            2500000000, 8000000000, 15000000000]]
 
 # Estimated values for the bonus refund effects
 DUST_REFUND = 1 / 6
@@ -30,7 +29,7 @@ GOLD_REFUND = 1 / 100
 ITEM_REFUND = 1 / 250
 UPGRADED_ITEM_REFUND = 1 / 1000
 
-SIMULATION_ROUNDS = 100000
+SIMULATION_ROUNDS = 10000
 
 
 def main():
