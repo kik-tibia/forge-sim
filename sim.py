@@ -6,14 +6,18 @@ import numpy as np
 from random import random
 
 # The class and tier to be simulated
-CLASS = 4
-TIER = 10
+CLASS = 3
+TIER = 1
 
 # Average price you expect to spend per item
-ITEM_COST = 4000000
+ITEM_COST = 150000
+
+# If set to non-zero value, will include transferring down to another item in the costs
+# i.e. if TIER = 4, this will calculate making a T5 base and transferring onto a T4
+TRANSFER_ITEM_COST = 18000000
 
 # Average price you expect to spend per sliver
-SLIVER_COST = 15000 # 8000 if TIER <= 3 else 15000
+SLIVER_COST = 12000
 CORE_COST = SLIVER_COST * 50
 
 GOLD_FEES = [[25000],
@@ -21,6 +25,8 @@ GOLD_FEES = [[25000],
         [4000000, 10000000, 20000000],
         [8000000, 20000000, 40000000, 65000000, 100000000, 250000000, 750000000,
             2500000000, 8000000000, 15000000000]]
+
+TRANSFER_CORES = [1, 2, 5, 10, 15, 25, 35, 50, 100]  # the last 4 are guesses
 
 # Estimated values for the bonus refund effects
 DUST_REFUND = 1 / 6
@@ -35,17 +41,20 @@ SIMULATION_ROUNDS = 10000
 
 def main():
     results = [sim_one_round(CLASS, TIER) for i in range(SIMULATION_ROUNDS)]
-    total_costs = [(ITEM_COST * i[0] + CORE_COST * i[2] + i[3]) / 1000000 for i in results]
+    total_costs = [(ITEM_COST * i[0] + TRANSFER_ITEM_COST + CORE_COST * i[2] + i[3]) / 1000000 for i in results]
     item_counts = [i[0] for i in results]
     gold_counts = [i[3] / 1000000 for i in results]
+    dusts = [i[1] for i in results]
+    avg_dust = sum(dusts) / len(dusts)
     avg_cost = sum(total_costs) / len(total_costs)
     min_cost = int(min(total_costs))
     max_cost = int(max(total_costs))
 
 
+    print(f'mean dust: {avg_dust}')
     print(f'mean item count: {sum(item_counts) / len(item_counts)}')
     print(f'mean gold fees: {sum(gold_counts) / len(gold_counts)}kk')
-    print(f'mean total cost: {int(avg_cost)}kk')
+    print(f'mean total cost: {(avg_cost)}kk')
 
     plot(total_costs, avg_cost, min_cost, max_cost)
 
@@ -93,6 +102,7 @@ def plot(total_costs, avg_cost, min_cost, max_cost):
 
 
 def sim_one_round(classif, tier):
+    if TRANSFER_ITEM_COST > 0: tier += 1
     item_count = 0
     dust = 0
     cores = 0
@@ -143,6 +153,11 @@ def sim_one_round(classif, tier):
                     items[i] -= 2
                     items[i + 1] += 1
                 break
+
+    if TRANSFER_ITEM_COST > 0:
+        dust += 100
+        cores += TRANSFER_CORES[tier - 1]
+        gold += GOLD_FEES[classif - 1][tier - 1]
 
     return (item_count, dust, cores, gold)
 
