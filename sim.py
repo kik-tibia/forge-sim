@@ -6,15 +6,15 @@ import numpy as np
 from random import random
 
 # The class and tier to be simulated
-CLASS = 3
-TIER = 1
+CLASS = 4
+TIER = 4
 
 # Average price you expect to spend per item
-ITEM_COST = 150000
+ITEM_COST = 2500000
 
 # If set to non-zero value, will include transferring down to another item in the costs
 # i.e. if TIER = 4, this will calculate making a T5 base and transferring onto a T4
-TRANSFER_ITEM_COST = 18000000
+TRANSFER_ITEM_COST = 300000000
 
 # Average price you expect to spend per sliver
 SLIVER_COST = 12000
@@ -156,7 +156,7 @@ def sim_one_round(classif, tier):
 
     if TRANSFER_ITEM_COST > 0:
         dust += 100
-        cores += TRANSFER_CORES[tier - 1]
+        cores += TRANSFER_CORES[tier - 2]
         gold += GOLD_FEES[classif - 1][tier - 1]
 
     return (item_count, dust, cores, gold)
