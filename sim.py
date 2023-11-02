@@ -55,7 +55,7 @@ def main():
     std_dev = statistics.stdev(total_costs)
 
     print(f'mean dust: {avg_dust}')
-    print(f'standard deviation: {std_dev}')
+    print(f'standard deviation: {std_dev}kk')
     print(f'mean item count: {sum(item_counts) / len(item_counts)}')
     print(f'mean gold fees: {sum(gold_counts) / len(gold_counts)}kk')
     print(f'mean total cost: {(avg_cost)}kk')
