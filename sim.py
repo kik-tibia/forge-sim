@@ -8,18 +8,18 @@ import statistics
 
 # The class and tier to be simulated
 CLASS = 4
-TIER = 5
+TIER = 3
 
 # Average price you expect to spend per item
-ITEM_COST = 3000000
+ITEM_COST = 1000000
 
 # If set to non-zero value, will include transferring down to another item in the costs
 # i.e. if TIER = 4, this will calculate making a T5 base and transferring onto a T4
-TRANSFER_ITEM_COST = 100000000
-CONVERGENCE_TRANSFER = True
+TRANSFER_ITEM_COST = 0
+CONVERGENCE_TRANSFER = False
 
 # Average price you expect to spend per sliver
-SLIVER_COST = 15000
+SLIVER_COST = 5000
 CORE_COST = SLIVER_COST * 50
 
 GOLD_FEES = [[25000],
@@ -27,19 +27,20 @@ GOLD_FEES = [[25000],
         [4000000, 10000000, 20000000],
         [8000000, 20000000, 40000000, 65000000, 100000000, 250000000, 750000000,
             2500000000, 8000000000, 15000000000]]
-CONVERGENCE_GOLD_FEES = [0, 0, 0, 0, 2000000000] # TODO get the other values
+CONVERGENCE_GOLD_FEES = [65000000, 165000000, 375000000, 800000000, 2000000000,
+                         5250000000, 14500000000, 42500000000, 100000000000, 300000000000]
 
 TRANSFER_CORES = [1, 2, 5, 10, 15, 25, 35, 50, 100]  # the last 4 are guesses
 
 # Estimated values for the bonus refund effects
 DUST_REFUND = 1 / 6
 CORE_REFUND = 1 / 20
+ITEM_REFUND = 1 / 25
 GOLD_REFUND = 1 / 100
 DOWNGRADED_ITEM_REFUND = 1 / 250
-ITEM_REFUND = 1 / 500
 UPGRADED_ITEM_REFUND = 1 / 1000
 
-SIMULATION_ROUNDS = 100000
+SIMULATION_ROUNDS = 10000
 
 
 def main():
@@ -54,11 +55,12 @@ def main():
     max_cost = int(max(total_costs))
     std_dev = statistics.stdev(total_costs)
 
+    print(f'Base: {ITEM_COST / 1000000}kk, convergence: {CONVERGENCE_TRANSFER}')
     print(f'mean dust: {avg_dust}')
-    print(f'standard deviation: {std_dev}kk')
     print(f'mean item count: {sum(item_counts) / len(item_counts)}')
     print(f'mean gold fees: {sum(gold_counts) / len(gold_counts)}kk')
     print(f'mean total cost: {(avg_cost)}kk')
+    print(f'standard deviation: {std_dev}kk')
 
     plot(total_costs, avg_cost, min_cost, max_cost)
 
